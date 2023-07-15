@@ -1,0 +1,397 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ */
+package com.batteryworkshop.view.modal;
+import com.batteryworkshop.model.dao.RolDao;
+import com.batteryworkshop.model.dao.UsuarioDao;
+import com.batteryworkshop.model.Rol;
+import com.batteryworkshop.model.Usuario;
+import com.batteryworkshop.view.FrmGestionarUsuario;
+import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author JuniorMiguel
+ */
+public class FrmRegistrarUsuario extends javax.swing.JInternalFrame {
+
+    UsuarioDao usuarioC = new UsuarioDao();
+    RolDao rolC = new RolDao();
+    SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+    public static int idUsuario = 0;
+    public static boolean vista = false;
+
+    /**
+     * Creates new form FrmRegistroUsuario
+     */
+    public FrmRegistrarUsuario() {
+        initComponents();
+        cargarRoles();
+        acciones();
+//        txtFecha.setDateFormatString("yyyy-MM-dd");
+    }
+
+    private void cargarRoles() {
+        cmbRol.removeAllItems();
+        List lista = rolC.listar();
+        Rol rol;
+        for (int i = 0; i < lista.size(); i++) {
+            rol = (Rol) lista.get(i);
+            cmbRol.addItem(rol.getDescripcion());
+        }
+    }
+
+    void acciones() {
+
+        if (vista) {
+
+            txtDocumento.setEnabled(false);
+            txtApellidos.setEnabled(false);
+            txtClave.setEnabled(false);
+            txtFecha.setEnabled(false);
+            txtNombres.setEnabled(false);
+            txtTelefono.setEnabled(false);
+            cmbRol.setEnabled(false);
+            txtCorreo.setEnabled(false);
+            cmdGrabar.setEnabled(false);
+
+        }
+        if (idUsuario > 0) {
+
+            Usuario usuarioV = (Usuario) usuarioC.obtenerObjecto(idUsuario);
+            txtDocumento.setText(usuarioV.getDocumento());
+            txtClave.setText(usuarioV.getClave());
+            txtCorreo.setText(usuarioV.getCorreo());
+            txtApellidos.setText(usuarioV.getApellidos());
+            txtFecha.setDate(usuarioV.getFechaNacimiento());
+            txtNombres.setText(usuarioV.getNombres());
+            txtTelefono.setText(usuarioV.getTelefono());
+            cmbRol.setSelectedItem(usuarioV.getRol().getDescripcion());
+        }
+
+    }
+
+    void grabar() {
+            if (txtFecha.getDateFormatString().isEmpty()) {
+            JOptionPane.showMessageDialog(null,"ocurrio un error");
+            return;
+        }
+      
+        if (txtDocumento.getText().isEmpty() | txtApellidos.getText().isEmpty() | txtNombres.getText().isEmpty() |
+                 txtClave.getText().isEmpty()) {
+           JOptionPane.showMessageDialog(null,"Los campos, documento,nombres, apellidos,documento, fecha y clave son obligatorios");
+            return ;
+        }
+        
+        Usuario usuario = new Usuario();
+        usuario.setDocumento(txtDocumento.getText());
+        usuario.setNombres(txtNombres.getText().toUpperCase());
+        usuario.setApellidos(txtApellidos.getText().toUpperCase());
+        usuario.setCorreo(txtCorreo.getText().toUpperCase());
+        usuario.setClave(txtClave.getText());
+        usuario.setTelefono(txtTelefono.getText());
+        usuario.setEstado(true);
+        usuario.setFechaNacimiento(java.sql.Date.valueOf(formato.format(txtFecha.getDate())));
+        usuario.setRol((Rol) rolC.obtenerObjecto(cmbRol.getSelectedItem().toString()));
+        
+
+
+        if (cmdGrabar.getText().equalsIgnoreCase("Grabar")) {
+            try {
+                usuarioC.registrar(usuario);
+                JOptionPane.showMessageDialog(null, "Usuario Se Registro Correctamente");
+//                AlertaBien alerta = new AlertaBien("MENSAJE", "El usuario se registro correctamente");
+                this.dispose();
+                FrmGestionarUsuario.listar("");
+
+            } catch (Exception e) {
+//                AlertaError error = new AlertaError("ERROR", e.getMessage());
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+        } else {
+            try {
+                usuario.setUsuarioId(idUsuario);
+                usuarioC.editar(usuario);
+//                AlertaBien alerta = new AlertaBien("MENSAJE", "El usuario se actulizó correctamente");
+                JOptionPane.showMessageDialog(null, "Los Datos Se Actualizarón Correctamente");
+                this.dispose();
+                FrmGestionarUsuario.listar("");
+
+            } catch (Exception e) {
+//                AlertaError error = new AlertaError("ERROR", e.getMessage());
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
+        }
+
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtNombres = new javax.swing.JTextField();
+        txtDocumento = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtTelefono = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        txtCorreo = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        txtApellidos = new javax.swing.JTextField();
+        cmdGrabar = new javax.swing.JButton();
+        cmbRol = new javax.swing.JComboBox<>();
+        txtClave = new javax.swing.JTextField();
+        txtFecha = new com.toedter.calendar.JDateChooser();
+
+        setClosable(true);
+        setIconifiable(true);
+        setTitle("Registrar Usuario");
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosed(evt);
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setText("Documento*");
+
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setText("Nombres*");
+
+        jLabel3.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel3.setText("Apellidos*");
+
+        txtNombres.setMinimumSize(new java.awt.Dimension(64, 17));
+        txtNombres.setPreferredSize(new java.awt.Dimension(69, 20));
+
+        txtDocumento.setMinimumSize(new java.awt.Dimension(64, 17));
+        txtDocumento.setPreferredSize(new java.awt.Dimension(69, 20));
+        txtDocumento.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtDocumentoKeyTyped(evt);
+            }
+        });
+
+        jLabel4.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel4.setText("Fecha Nacimiento");
+
+        jLabel5.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel5.setText("Rol*");
+
+        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel6.setText("Telefono");
+
+        txtTelefono.setMinimumSize(new java.awt.Dimension(64, 17));
+        txtTelefono.setPreferredSize(new java.awt.Dimension(69, 20));
+        txtTelefono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtTelefonoKeyTyped(evt);
+            }
+        });
+
+        jLabel7.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel7.setText("Correo");
+
+        txtCorreo.setMinimumSize(new java.awt.Dimension(64, 17));
+        txtCorreo.setPreferredSize(new java.awt.Dimension(69, 20));
+
+        jLabel8.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel8.setText("Clave*");
+
+        txtApellidos.setMinimumSize(new java.awt.Dimension(64, 17));
+        txtApellidos.setPreferredSize(new java.awt.Dimension(69, 20));
+
+        cmdGrabar.setBackground(new java.awt.Color(27, 118, 253));
+        cmdGrabar.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        cmdGrabar.setForeground(new java.awt.Color(255, 255, 255));
+        cmdGrabar.setMnemonic('N');
+        cmdGrabar.setText("Grabar");
+        cmdGrabar.setToolTipText("Realizar Nuevo Registro");
+        cmdGrabar.setBorder(null);
+        cmdGrabar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cmdGrabar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdGrabarActionPerformed(evt);
+            }
+        });
+
+        cmbRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtDocumento, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNombres, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                            .addComponent(txtTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(22, 22, 22))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtApellidos, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmdGrabar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbRol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtClave))
+                .addContainerGap(11, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addComponent(cmbRol)
+                    .addComponent(txtFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtCorreo, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addComponent(txtClave))
+                .addGap(18, 18, 18)
+                .addComponent(cmdGrabar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void cmdGrabarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdGrabarActionPerformed
+        grabar();
+
+    }//GEN-LAST:event_cmdGrabarActionPerformed
+
+    private void formInternalFrameClosed(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosed
+        idUsuario = 0;
+        vista = false;
+    }//GEN-LAST:event_formInternalFrameClosed
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        idUsuario = 0;
+        vista = false;
+    }//GEN-LAST:event_formInternalFrameClosing
+
+    private void txtTelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTelefonoKeyTyped
+       char caracter = evt.getKeyChar();
+        if (((caracter < '0') || (caracter > '9')) && (caracter != '\b') ) {
+            evt.consume();
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Solo Acepta Números");
+        }
+    }//GEN-LAST:event_txtTelefonoKeyTyped
+
+    private void txtDocumentoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDocumentoKeyTyped
+        char caracter = evt.getKeyChar();
+        if (txtDocumento.getText().length()>=8){
+             evt.consume();
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Solo Acepta 8 Números");
+        }
+        if (((caracter < '0') || (caracter > '9'))   && (caracter != '\b')  ) {
+            evt.consume();
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(null, "Solo Acepta Números");
+           
+        }
+    }//GEN-LAST:event_txtDocumentoKeyTyped
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cmbRol;
+    public static javax.swing.JButton cmdGrabar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField txtApellidos;
+    private javax.swing.JTextField txtClave;
+    private javax.swing.JTextField txtCorreo;
+    private javax.swing.JTextField txtDocumento;
+    private com.toedter.calendar.JDateChooser txtFecha;
+    private javax.swing.JTextField txtNombres;
+    private javax.swing.JTextField txtTelefono;
+    // End of variables declaration//GEN-END:variables
+}
