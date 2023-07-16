@@ -1,10 +1,16 @@
 package com.batteryworkshop.view.modal;
 
+import com.batteryworkshop.datasource.Conexion;
 import com.batteryworkshop.model.Cliente;
+import com.batteryworkshop.model.DetalleVenta;
 import com.batteryworkshop.model.Producto;
+import com.batteryworkshop.model.ProductoVta;
 import com.batteryworkshop.model.Usuario;
+import com.batteryworkshop.model.Venta;
 import com.batteryworkshop.model.dao.ClienteDao;
+import com.batteryworkshop.model.dao.DetalleVentaDao;
 import com.batteryworkshop.model.dao.ProductoDao;
+import com.batteryworkshop.model.dao.VentaDao;
 import com.batteryworkshop.properties.RenderTable;
 import com.batteryworkshop.view.FrmMenuPrincipal;
 import com.formdev.flatlaf.util.StringUtils;
@@ -12,7 +18,14 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,6 +42,8 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
     private static Cliente cliente;
     private static Producto producto;
     private static DefaultTableModel modelo;
+    private static final List<ProductoVta> productoAdded = new ArrayList<>();
+    private static final ProductoVta pdtoVta = new ProductoVta();
 
     public FrmRegistrarVenta() {
         initComponents();
@@ -53,6 +68,67 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
         txtPagaCon.setEnabled(false);
         txtCambio.setEnabled(false);
         btnAgregarVenta.setEnabled(false);
+
+    }
+
+    private void insertMasivo() {
+
+        try {
+            Connection con = null;
+            Usuario usuario = FrmMenuPrincipal.usuario;
+            Conexion conex = new Conexion();
+
+            PreparedStatement ps;
+            ResultSet rs;
+            String sql = "";
+
+            con = conex.Conectar();
+
+            con.setAutoCommit(false);
+
+            // <editor-fold defaultstate="collapsed" desc="CodeInsertVenta">
+            java.util.Date fechaSelec = txtFecha.getDate();
+            //Para registrar la venta 
+            VentaDao ventaDao = new VentaDao();
+            Venta ven = new Venta();
+            ven.setUsuario(usuario);
+            ven.setTipoDocumento(cmbDocumento.getSelectedItem().toString());
+            ven.setCliente(cliente);
+            ven.setMontoPago(Float.valueOf(txtTotalAPagar.getText()));
+            ven.setMontoCambio(Float.valueOf(txtCambio.getText()));
+            ven.setFechaVenta(new Date(fechaSelec.getTime()));
+            int idGenerado = ventaDao.registrar(ven, conex);
+            // </editor-fold>
+            System.out.println(idGenerado);
+            // <editor-fold defaultstate="collapsed" desc="CodeInsertDetalleVenta">
+            DetalleVentaDao detalleVentaDao = new DetalleVentaDao();
+            List<DetalleVenta> detalleList = new ArrayList<>();
+
+            for (var item : productoAdded) {
+                DetalleVenta detalle = new DetalleVenta();
+                detalle.setVentaID(idGenerado);
+                detalle.setProductoID(item.getProducto());
+                detalle.setCantidad(item.getCantidad());
+                detalle.setSubTotal(item.getProducto().getPrecioVenta() * item.getCantidad());
+                detalleList.add(detalle);
+                System.out.println("entre");
+            }
+
+            for (var x : detalleList) {
+                detalleVentaDao.registrar(x, conex);
+            }
+
+            // </editor-fold>
+            con.commit();
+
+            JOptionPane.showMessageDialog(null, "Venta registrada correctamente");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            JOptionPane.showMessageDialog(null, "Error al registrar la venta");
+        }
 
     }
 
@@ -466,7 +542,7 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnAgregarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarVentaActionPerformed
-        // TODO add your handling code here:
+        insertMasivo();
     }//GEN-LAST:event_btnAgregarVentaActionPerformed
 
     private void txtDocumentoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDocumentoKeyTyped
@@ -593,6 +669,9 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
                 btnBuscarProducto.setEnabled(false);
                 btnAgregar.setEnabled(true);
                 txtCantidad.setEnabled(true);
+
+                pdtoVta.setProducto(producto);
+
             } else {
                 JOptionPane.showMessageDialog(null, "Producto no existe");
                 txtCodigoProducto.setText("");
@@ -606,12 +685,6 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
 
         txtPagaCon.setEnabled(true);
 
-        //agregar columnas
-        Usuario usuario = FrmMenuPrincipal.usuario;
-        System.out.println(cliente.toString());
-        System.out.println(usuario.toString());
-        System.out.println(producto.toString());
-
         //Cliente cliente 
         ImageIcon icono = new ImageIcon("src/main/java/com/batteryworkshop/image/eliminar.png");
         Icon btnEliminar = new ImageIcon(icono.getImage().getScaledInstance(22, 22, Image.SCALE_DEFAULT));
@@ -620,6 +693,11 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
         botonEliminar.setToolTipText("eliminar");
         botonEliminar.setBorder(null);
         botonEliminar.setBackground(new Color(223, 68, 83));
+
+        pdtoVta.setCantidad((int) txtCantidad.getValue());
+        if (pdtoVta != null) {
+            productoAdded.add(pdtoVta);
+        }
 
         modelo.addRow(new Object[]{
             producto.getNombre(),
@@ -640,6 +718,7 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
         tbListado.getColumnModel().getColumn(4).setPreferredWidth(40);
         lipiarProducto();
         almacenarTotalAPagar(modelo);
+
     }
 
     private void almacenarTotalAPagar(DefaultTableModel model) {
@@ -652,6 +731,7 @@ public class FrmRegistrarVenta extends javax.swing.JInternalFrame {
     }
 
     private void lipiarProducto() {
+
         txtCodigoProducto.setText("");
         txtProducto.setText("");
         txtPrecio.setText("");

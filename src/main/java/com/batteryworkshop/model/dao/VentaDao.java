@@ -6,15 +6,14 @@ import java.sql.*;
 
 public class VentaDao {
 
-    Conexion estado = new Conexion();
     Connection con;
     PreparedStatement ps;
     ResultSet rs;
     String sql = "";
 
-    
-    public void registrar(Object obj) throws Exception {
+    public int registrar(Object obj, Conexion estado) {
 
+        int idGenerado = 0;
         Venta venta = (Venta) obj;
         sql = "insert into venta(usuarioId,tipoDocumento,documentoCliente,nombreCliente,montoPago,montoCambio,fechaVenta)\n"
                 + "values(?,?,?,?,?,?,?)";
@@ -22,7 +21,7 @@ public class VentaDao {
         try {
 
             con = estado.Conectar();
-            ps = con.prepareStatement(sql);
+            ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, venta.getUsuario().getUsuarioId());
             ps.setString(2, venta.getTipoDocumento());
             ps.setString(3, venta.getCliente().getDocumento());
@@ -30,11 +29,14 @@ public class VentaDao {
                     .concat(" ").concat(venta.getCliente().getApellidos().toUpperCase()));
             ps.setFloat(5, venta.getMontoPago());
             ps.setFloat(6, venta.getMontoCambio());
-            ps.setDate(7, (Date) venta.getFechaVenta());         
+            ps.setDate(7, (Date) venta.getFechaVenta());
             ps.executeUpdate();
 
-        } catch (SQLException pe) {
-            throw new Exception("Ya existe La Venta");
+            rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                idGenerado = rs.getInt(1);
+                System.out.println("ID generado: " + idGenerado);
+            }
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {
@@ -47,10 +49,11 @@ public class VentaDao {
                 }
             } catch (SQLException e) {
                 e.printStackTrace(System.err);
+
             }
         }
 
+        return idGenerado;
     }
 
-    
 }
