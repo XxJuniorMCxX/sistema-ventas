@@ -215,6 +215,53 @@ public class ClienteDao implements CRUD {
         return new Cliente();
     }
 
+    public Cliente obtenerObjectoDni(String dni) {
+
+        Cliente clienteObt = new Cliente();
+        sql = "select * from cliente where dni = '" + dni + "'";
+
+        try {
+
+            con = estado.Conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                
+                clienteObt.setClienteId(rs.getInt(1));
+                clienteObt.setDocumento(rs.getString(2));
+                clienteObt.setNombres(rs.getString(3));
+                clienteObt.setApellidos(rs.getString(4));
+                clienteObt.setCorreo(rs.getString(5));
+                clienteObt.setTelefono(rs.getString(6));
+                clienteObt.setEstado(rs.getBoolean(7));
+               
+
+            }else{
+                return null;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(System.err);
+            }
+        }
+
+         return clienteObt;
+    }
+
     @Override
     public List<Object> listar(Object obj) {
 

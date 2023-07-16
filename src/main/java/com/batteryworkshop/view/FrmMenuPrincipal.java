@@ -530,7 +530,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu mnuProducto;
     private javax.swing.JMenu mnuProveedor;
     private javax.swing.JMenu mnuReporte;
-    private javax.swing.JMenu mnuUsuario;
+    public static javax.swing.JMenu mnuUsuario;
     private javax.swing.JMenu mnuVenta;
     // End of variables declaration//GEN-END:variables
 }

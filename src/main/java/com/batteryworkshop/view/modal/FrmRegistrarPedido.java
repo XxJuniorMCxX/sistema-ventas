@@ -390,12 +390,11 @@ public class FrmRegistrarPedido extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtDocumentoKeyTyped
 
     private void jTextField5KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField5KeyTyped
-       char caracter = evt.getKeyChar();//atrapa el valor ascii luego evalua la condicion
-        if (((caracter < '0') || (caracter > '9'))   && (caracter != '\b')  ) {
-            evt.consume();//no permite escribir
-            Toolkit.getDefaultToolkit().beep();//permite el sonido bip
+      char caracter = evt.getKeyChar();
+        if (((caracter < '0') || (caracter > '9')) && (caracter != '\b') && (caracter != '.') ) {
+            evt.consume();
+            Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null, "Solo Acepta Números");
-           
         }
     }//GEN-LAST:event_jTextField5KeyTyped
 

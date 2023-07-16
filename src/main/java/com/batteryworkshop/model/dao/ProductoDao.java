@@ -255,6 +255,56 @@ public class ProductoDao implements CRUD {
 
         return new Producto();
     }
+    //Traer Producto
+    public Producto obtenerObjectoCodigo(String codigo) {
+
+        Producto producto = new Producto();
+        sql = "select * from producto where codigo = '" + codigo+ "'";
+
+        try {
+
+            con = estado.Conectar();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                
+                        producto.setProductoId(rs.getInt(1));
+                        producto.setCodigo(rs.getString(2));
+                        producto.setNombre(rs.getString(3));
+                        producto.setDescripcion(rs.getString(4));
+                        producto.setCategoria((Categoria) categoriaDao.obtenerObjecto(rs.getInt(5)));
+                        producto.setStock(rs.getInt(6));
+                        producto.setPrecioCompra(rs.getFloat(7));
+                        producto.setPrecioVenta(rs.getFloat(8));
+                        producto.setEstado(rs.getBoolean(9));
+               
+
+            }else{
+                return null;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(System.err);
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(System.err);
+            }
+        }
+
+        return producto;
+    }
     
     public Object obtenerObjectoStock(Object obj) {
 

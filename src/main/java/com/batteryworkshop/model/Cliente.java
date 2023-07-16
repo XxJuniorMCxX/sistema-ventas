@@ -88,6 +88,11 @@ public class Cliente {
         this.estado = estado;
     }
 
-  
+    @Override
+    public String toString() {
+        return "Cliente{" + "clienteId=" + clienteId + ", documento=" + documento + ", nombres=" + nombres + ", apellidos=" + apellidos + ", correo=" + correo + ", telefono=" + telefono + ", estado=" + estado + '}';
+    }
+
+    
     
 }
